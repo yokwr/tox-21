@@ -1,151 +1,17 @@
-# Tox21 SR-ARE: a leakage-audited benchmark
+# tox21-sr-are-benchmark
 
-A small benchmark built to answer one question honestly: **does a model trained on
-the Tox21 SR-ARE assay actually work, and on what?**
+An evaluation harness for the Tox21 SR-ARE assay (5,825 compounds, 942 actives).
 
-The modelling here is deliberately ordinary — a calibrated random forest on ECFP4
-fingerprints. The work is in the evaluation: leakage-safe splits, null baselines
-for every metric, a permutation control, and a validated applicability domain.
-Several of the findings are about the *benchmark* rather than the model.
+The model is a calibrated random forest on ECFP4 fingerprints. It is deliberately
+ordinary. The point of this repo is the evaluation around it: scaffold splits,
+null baselines for every metric, a permutation control, and an applicability
+domain with thresholds derived from the training data.
 
-Full methodology, provenance and known defects: **[DATA_CARD.md](DATA_CARD.md)**.
-All numbers: **[results/tables.md](results/tables.md)**, regenerated from
-`results/results.json` rather than typed by hand.
+Methodology, provenance and dataset defects are in [DATA_CARD.md](DATA_CARD.md).
+Full numbers are in [results/tables.md](results/tables.md), generated from
+`results/results.json`.
 
----
-
-## Findings
-
-### 1. Accuracy on this task is worse than uninformative
-
-On the scaffold split, a classifier that predicts "inactive" for everything scores
-**0.769**.
-
-| Model | Accuracy | vs majority | Recall @0.5 |
-|---|---|---|---|
-| Calibrated RF, ECFP4 | 0.778 | **+0.86 pp** | 0.074 |
-| Calibrated RF, 6 descriptors | 0.767 | **−0.17 pp** | 0.052 |
-
-The descriptor model is *worse than a constant predictor*, and the fingerprint
-model finds 7% of actives. Yet the same fingerprint model reaches **2.07x
-enrichment at 47.9% precision** in the top decile — genuinely useful for ranking a
-library. Accuracy communicates the opposite of both facts.
-
-### 2. Random splits leak, and here is the mechanism and the size of it
-
-Holding the featuriser fixed at ECFP4 and changing only the split:
-
-| Split | Test compounds sharing a scaffold with train | ROC-AUC | PR-AUC vs random | Enrichment @10% |
-|---|---|---|---|---|
-| Random (seed 42) | **927 / 1,165 (79.6%)** | 0.763 | 2.68x | 2.97x |
-| Bemis–Murcko scaffold | **0 (0%)** | 0.708 | 1.89x | 2.07x |
-
-An earlier iteration of this project compared a random-split descriptor model
-against a scaffold-split fingerprint model and read the gap as leakage. That
-comparison changed two things at once and could not support the conclusion. The
-table above changes one.
-
-### 3. The applicability domain is real, and the aggregate score hides it
-
-Maximum Tanimoto similarity to the training set, with cutoffs derived from the
-training set's own leave-one-out nearest-neighbour distribution (not hand-picked):
-
-| Band | n | PR-AUC vs random | ECE |
-|---|---|---|---|
-| in-domain (sim ≥ 0.50) | 305 | **2.85x** | 0.040 |
-| borderline | 439 | 1.70x | 0.063 |
-| out-of-domain (sim < 0.33) | 421 | **1.33x** | 0.074 |
-
-The headline 1.89x is an average over a model that works on familiar chemistry and
-one that barely beats random on unfamiliar chemistry. **Calibration error nearly
-doubles in the same direction** — so the model is not merely less accurate
-out-of-domain, it is more confidently wrong there. A threshold-free
-similarity-quartile breakdown reproduces the same monotonic trend, so the
-conclusion does not depend on where the cutoffs were placed.
-
-### 4. The permutation null is not centred at 0.5
-
-Retraining the pipeline on permuted training labels, 20 times:
-
-| | Observed | Permutation null | Textbook floor |
-|---|---|---|---|
-| ROC-AUC | 0.692 | **0.544 ± 0.023** | 0.500 |
-| PR-AUC | 0.424 | **0.256 ± 0.017** | 0.231 (base rate) |
-
-Both nulls sit meaningfully above their textbook floors, and across 20 permutations
-the null ROC-AUC never dropped below 0.496. Scoring against 0.5 and against the
-base rate would overstate the result on both metrics. The observed result survives
-either way (z = 6.3 and 10.0, empirical p = 0), but the margin is smaller than the
-naive comparison suggests.
-
-A single permutation is not a control — it is one draw from a distribution whose
-spread turns out to be non-trivial. An earlier iteration of this project ran
-exactly one shuffle, got 0.553, and had no way to tell whether that indicated a
-leak or was ordinary variation. It was ordinary variation around a displaced null.
-
-**Why the null is displaced is not established here.** The plausible route is that
-a forest trained on destroyed labels still encodes local training-set density, and
-density is not independent of activity in this dataset. That is a hypothesis, not
-a result, and it is the second-most interesting open question in the repo.
-
-### 5. Bemis–Murcko does not do what its name suggests on this dataset
-
-| | |
-|---|---|
-| Compounds mapping to the **empty** (acyclic) scaffold | **1,513 (26%)** |
-| Compounds on the benzene scaffold | 1,224 (21%) |
-| Scaffolds appearing exactly once | 1,202 of 1,576 |
-| **Test compounds sitting in singleton scaffold classes** | **1,165 of 1,165** |
-
-Murcko strips side chains to the ring system, so every acyclic molecule collapses
-into one pseudo-group sharing nothing but the absence of rings. Two "groups" hold
-47% of the data, the splitter sends both to train wholesale, and the test set ends
-up composed entirely of scaffold singletons — the structural tail, not a random
-sample of harder chemistry. Class balance shifts from 0.144 in train to 0.231 in test.
-
-The scaffold-split score is therefore a **novel-chemotype worst case**, not "the
-honest number". That distinction matters when quoting it.
-
-### 6. Six compounds are labelled against themselves
-
-Five of the six InChIKey-skeleton groups with conflicting SR-ARE labels are
-protonation-state or stereo-annotation duplicates — pyruvate vs pyruvic acid,
-2-phenylphenol vs its phenolate, selenite vs selenous acid — the same species at
-assay pH with opposite labels. They cap achievable accuracy. None cross the
-train/test boundary in this split; under a random split they would leak directly.
-Details in [DATA_CARD.md §2.1](DATA_CARD.md).
-
----
-
-## Layout
-
-```
-src/tox21_bench/
-  data.py            load, featurise (ECFP4 + descriptors), InChIKey duplicate audit
-  splits.py          scaffold + random splits, overlap and composition diagnostics
-  metrics.py         metrics, null baselines, ECE, enrichment
-  models.py          calibrated RF, shuffled-label control, single-feature rankers
-  applicability.py   Tanimoto AD, derived thresholds, stratified evaluation
-  run_benchmark.py   entrypoint -> results/results.json
-  make_tables.py     results.json -> results/tables.md
-tests/               17 tests, including a regression test pinning the split
-app/app.py           demo UI that shows the domain alongside every score
-data/                frozen SMILES + SR-ARE labels
-DATA_CARD.md         provenance, defects, splits, metric rationale, limitations
-```
-
-`splits.scaffold_split` reimplements `deepchem.splits.ScaffoldSplitter` and is
-pinned to its published partition (4,660 / 1,165, 896 negatives / 269 actives) by
-`tests/test_splits.py::test_matches_published_deepchem_split`. This drops the
-DeepChem dependency, which pins an old RDKit and does not install cleanly on
-current Python.
-
-Note that a scaffold split is **deterministic** — it takes no seed. Code passing
-`seed=` to a scaffold splitter is passing an argument that does nothing.
-
----
-
-## Reproducing
+## Running
 
 ```bash
 pip install -r requirements.txt
@@ -154,20 +20,121 @@ python -m tox21_bench.make_tables --results results
 pytest
 ```
 
-Versions are pinned because the numbers move without them: an earlier
-XGBoost-based run of this project reported ROC-AUC 0.7650, which came back as
-0.7697 on a newer release of the same library with identical inputs.
+Versions are pinned in `requirements.txt`. An earlier XGBoost-based version of
+this work reported ROC-AUC 0.7650; the same inputs on a newer release of the
+library gave 0.7697.
 
----
+## Results
 
-## What this does not establish
+### Accuracy against null baselines
 
-The biggest open question is a **counter-screen control**. Tox21 stress-response
-panels ship with paired viability readouts, and nothing here tests whether the
-model is detecting SR-ARE activity specifically or general cytotoxicity. Until
-that is run, "the model finds SR-ARE actives" is not supported — only "the model
-ranks SR-ARE-labelled compounds above others."
+Scaffold split. Majority-class accuracy on this test set is 0.769.
 
-Other limits — single assay, single split per design, no hyperparameter search,
-no confidence intervals on the headline numbers, unquantified assay noise — are in
-[DATA_CARD.md §8](DATA_CARD.md).
+| Model | Accuracy | vs majority | Recall @0.5 | Enrichment @10% |
+|---|---|---|---|---|
+| Calibrated RF, ECFP4 | 0.778 | +0.86 pp | 0.074 | 2.07x |
+| Calibrated RF, 6 descriptors | 0.767 | -0.17 pp | 0.052 | 2.04x |
+
+The descriptor model scores below a constant predictor. The fingerprint model
+identifies 7% of actives at a 0.5 threshold, but ranks at 2.07x enrichment with
+47.9% precision in the top decile. It works as a ranker and not as a classifier,
+and accuracy shows neither.
+
+### Effect of the split
+
+Featuriser held fixed at ECFP4, only the split changes.
+
+| Split | Test compounds sharing a scaffold with train | ROC-AUC | PR-AUC vs random | Enrichment @10% |
+|---|---|---|---|---|
+| Random (seed 42) | 927 / 1,165 (79.6%) | 0.763 | 2.68x | 2.97x |
+| Bemis-Murcko scaffold | 0 (0%) | 0.708 | 1.89x | 2.07x |
+
+Base rates differ between the two test sets (0.187 vs 0.231), so only the margins
+over each split's own null are comparable, not the raw scores.
+
+### Applicability domain
+
+Maximum Tanimoto similarity (ECFP4) to any training compound. Cutoffs are
+percentiles of the training set's own leave-one-out nearest-neighbour
+distribution rather than round numbers.
+
+| Band | n | PR-AUC vs random | ECE |
+|---|---|---|---|
+| in-domain (sim >= 0.50) | 305 | 2.85x | 0.040 |
+| borderline | 439 | 1.70x | 0.063 |
+| out-of-domain (sim < 0.33) | 421 | 1.33x | 0.074 |
+
+The aggregate 1.89x averages over a model that ranks well on familiar chemistry
+and close to randomly on unfamiliar chemistry. Calibration error roughly doubles
+across the same range, so out-of-domain predictions are both worse and more
+confident. A similarity-quartile breakdown in `results/tables.md` shows the same
+trend without using the thresholds at all.
+
+### Permutation null
+
+Pipeline retrained on permuted training labels, 20 times, scaffold split, ECFP4.
+
+| | Observed | Permutation null | Nominal floor |
+|---|---|---|---|
+| ROC-AUC | 0.692 | 0.544 +/- 0.023 | 0.500 |
+| PR-AUC | 0.424 | 0.256 +/- 0.017 | 0.231 (base rate) |
+
+Both nulls sit above their nominal floors and the null ROC-AUC never fell below
+0.496 across the 20 runs. The observed result clears either reference (z = 6.3
+and 10.0, empirical p = 0), but margins quoted against 0.5 and against the base
+rate are optimistic by roughly 0.04 and 0.03 respectively.
+
+Why the null is displaced is untested. One possibility is that a forest fitted to
+permuted labels still encodes local training-set density, and density correlates
+with activity here. That is a guess.
+
+## Notes on the split
+
+Bemis-Murcko maps acyclic molecules to the empty scaffold, which collects 1,513
+compounds (26% of the dataset). Benzene collects another 1,224. The DeepChem
+splitter fills training largest-group-first, so both go to training, and all
+1,165 test compounds end up in singleton scaffold classes. Train base rate is
+0.144, test is 0.231.
+
+Scaffold-split scores here are therefore a novel-chemotype estimate rather than
+an average-case one.
+
+Six InChIKey-skeleton groups carry conflicting SR-ARE labels. Five are
+protonation-state or stereochemistry duplicates (pyruvate/pyruvic acid,
+2-phenylphenol/phenolate, selenite/selenous acid, and two others), which are the
+same species at assay pH. None are split across train and test here. Details in
+[DATA_CARD.md](DATA_CARD.md) section 2.
+
+`splits.scaffold_split` reimplements `deepchem.splits.ScaffoldSplitter` so the
+DeepChem dependency can be dropped. A regression test pins it to the published
+partition (4,660 / 1,165, 896 negatives, 269 actives). The split is deterministic
+and takes no seed.
+
+## Layout
+
+```
+src/tox21_bench/
+  data.py            loading, ECFP4 + descriptor featurisation, InChIKey duplicate audit
+  splits.py          scaffold and random splits, overlap and composition diagnostics
+  metrics.py         metrics, null baselines, ECE, enrichment
+  models.py          calibrated RF, shuffled-label control, single-feature rankers
+  applicability.py   Tanimoto AD, derived thresholds, stratified evaluation
+  run_benchmark.py   entrypoint, writes results/results.json
+  make_tables.py     results.json -> results/tables.md
+tests/               17 tests
+app/app.py           demo UI, shows the domain band alongside every score
+data/                frozen SMILES and SR-ARE labels
+```
+
+## Limitations
+
+The main untested question is whether the model detects SR-ARE activity or
+general cytotoxicity. Tox21 stress-response panels ship with paired viability
+readouts and no counter-screen control is run here, so the supported claim is
+that the model ranks SR-ARE-labelled compounds above others, and nothing
+stronger.
+
+Also: one assay, one split per design, no hyperparameter search, no confidence
+intervals on the headline numbers, and assay noise is unquantified so the
+distance to the achievable ceiling is unknown. See
+[DATA_CARD.md](DATA_CARD.md) section 8.
