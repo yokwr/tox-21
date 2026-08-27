@@ -1,0 +1,27 @@
+{
+  "n_permutations": 20,
+  "real": {
+    "roc_auc": 0.6924248207647372,
+    "pr_auc": 0.42396819224187854
+  },
+  "null_roc_auc": {
+    "mean": 0.5443503551513542,
+    "sd": 0.02342836071453261,
+    "min": 0.4956228425385023,
+    "max": 0.583574664763675,
+    "p95": 0.5830129987055231
+  },
+  "null_pr_auc": {
+    "mean": 0.25606892613264004,
+    "sd": 0.016739012244341774,
+    "min": 0.2205038246016578,
+    "max": 0.28240746800195315,
+    "p95": 0.27906457659008765
+  },
+  "z_roc": 6.320308425229787,
+  "z_pr": 10.030416589604496,
+  "empirical_p_roc": 0.0,
+  "empirical_p_pr": 0.0,
+  "note": "Null is centred at 0.544, not 0.5, and its PR-AUC null (0.256) sits above the base-rate floor (0.231). Calibration is omitted here for compute reasons; it does not affect ranking metrics, and the observed value quoted is from the same uncalibrated forest, so the comparison is like-for-like.",
+  "model": "RandomForest (uncalibrated) on ECFP4, scaffold split"
+}

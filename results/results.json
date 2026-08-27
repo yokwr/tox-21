@@ -1,0 +1,525 @@
+{
+  "dataset": {
+    "n": 5825,
+    "n_actives": 942,
+    "base_rate": 0.16171673819742488,
+    "assay": "SR-ARE"
+  },
+  "duplicates": {
+    "n": 5825,
+    "exact_smiles_duplicates": 0,
+    "inchikey_duplicates": 2,
+    "inchikey_groups_with_conflicting_labels": 0,
+    "skeleton_duplicates": 128,
+    "skeleton_groups_with_conflicting_labels": 6,
+    "unparseable": 0
+  },
+  "versions": {
+    "python": "3.12.3",
+    "numpy": "2.4.4",
+    "scikit-learn": "1.8.0",
+    "rdkit": "2026.03.5"
+  },
+  "designs": {
+    "scaffold": {
+      "n_train": 4660,
+      "n_test": 1165,
+      "train_base_rate": 0.1444206008583691,
+      "test_base_rate": 0.23090128755364808,
+      "scaffold_overlap": {
+        "n_test": 1165,
+        "test_compounds_whose_scaffold_is_in_train": 0,
+        "fraction": 0.0,
+        "n_train_scaffolds": 411,
+        "n_test_scaffolds": 1165
+      },
+      "nulls": {
+        "majority_class_accuracy": 0.769098712446352,
+        "random_ranker_pr_auc": 0.23090128755364808,
+        "random_ranker_roc_auc": 0.5,
+        "constant_base_rate_brier": 0.1775858829597156,
+        "random_ranker_enrichment_x": 1.0
+      },
+      "models": {
+        "calibrated_rf__ecfp4": {
+          "n": 1165,
+          "n_actives": 269,
+          "base_rate": 0.23090128755364808,
+          "accuracy": 0.7776824034334764,
+          "roc_auc": 0.7074793381571959,
+          "pr_auc": 0.43541221142281583,
+          "brier": 0.16278931226065124,
+          "ece": 0.0517757790352938,
+          "recall_at_0.5": 0.07434944237918216,
+          "precision_at_0.5": 0.6666666666666666,
+          "enrichment_top10pct": {
+            "frac": 0.1,
+            "n_top": 117,
+            "actives_top": 56,
+            "expected_actives_if_random": 27.0,
+            "enrichment_x": 2.0728878721443778,
+            "precision_at_frac": 0.47863247863247865,
+            "recall_at_frac": 0.20817843866171004
+          },
+          "margin_over_null": {
+            "accuracy_over_majority_pp": 0.8583690987124415,
+            "pr_auc_over_random_x": 1.8857071609947227,
+            "brier_vs_base_rate": -0.01479657069906437,
+            "enrichment_x": 2.0728878721443778
+          }
+        },
+        "calibrated_rf__descriptors": {
+          "n": 1165,
+          "n_actives": 269,
+          "base_rate": 0.23090128755364808,
+          "accuracy": 0.7673819742489271,
+          "roc_auc": 0.7001398201009028,
+          "pr_auc": 0.39756831730473985,
+          "brier": 0.16537980412454603,
+          "ece": 0.0500140918421224,
+          "recall_at_0.5": 0.05204460966542751,
+          "precision_at_0.5": 0.4666666666666667,
+          "enrichment_top10pct": {
+            "frac": 0.1,
+            "n_top": 117,
+            "actives_top": 55,
+            "expected_actives_if_random": 27.0,
+            "enrichment_x": 2.0358720172846567,
+            "precision_at_frac": 0.4700854700854701,
+            "recall_at_frac": 0.20446096654275092
+          },
+          "margin_over_null": {
+            "accuracy_over_majority_pp": -0.17167381974249052,
+            "pr_auc_over_random_x": 1.7218107422305646,
+            "brier_vs_base_rate": -0.012206078835169581,
+            "enrichment_x": 2.0358720172846567
+          }
+        }
+      },
+      "_probs_for_ad": true,
+      "controls": {
+        "shuffled_labels__ecfp4": {
+          "n": 1165,
+          "n_actives": 269,
+          "base_rate": 0.23090128755364808,
+          "accuracy": 0.769098712446352,
+          "roc_auc": 0.5531917983271376,
+          "pr_auc": 0.2574340266033479,
+          "brier": 0.18463525603086425,
+          "ece": 0.08484730544775251,
+          "recall_at_0.5": 0.0,
+          "precision_at_0.5": NaN,
+          "enrichment_top10pct": {
+            "frac": 0.1,
+            "n_top": 117,
+            "actives_top": 33,
+            "expected_actives_if_random": 27.0,
+            "enrichment_x": 1.221523210370794,
+            "precision_at_frac": 0.28205128205128205,
+            "recall_at_frac": 0.12267657992565056
+          }
+        },
+        "single_descriptor__molecular weight": {
+          "roc_auc": 0.6123394350770047,
+          "pr_auc": 0.28945092725852395
+        },
+        "single_descriptor__number of hydrogen donors": {
+          "roc_auc": 0.4729798692246415,
+          "pr_auc": 0.22465194635149438
+        },
+        "single_descriptor__number of hydrogen acceptors": {
+          "roc_auc": 0.5415581020977164,
+          "pr_auc": 0.2519174558336
+        },
+        "single_descriptor__polar surface area": {
+          "roc_auc": 0.5160295240308018,
+          "pr_auc": 0.2356500470492017
+        },
+        "single_descriptor__lipophilicity": {
+          "roc_auc": 0.6766151918481147,
+          "pr_auc": 0.3554549011082827
+        },
+        "single_descriptor__rotatable bonds": {
+          "roc_auc": 0.5440806724641529,
+          "pr_auc": 0.2486572076114382
+        }
+      },
+      "scaffold_composition": {
+        "n_compounds": 5825,
+        "n_scaffolds": 1576,
+        "singleton_scaffolds": 1202,
+        "acyclic_empty_scaffold_compounds": 1513,
+        "largest_scaffold_classes": [
+          [
+            "<acyclic>",
+            1513
+          ],
+          [
+            "c1ccccc1",
+            1224
+          ],
+          [
+            "c1ccncc1",
+            75
+          ],
+          [
+            "c1ccc2ccccc2c1",
+            56
+          ],
+          [
+            "C1CCCCC1",
+            56
+          ],
+          [
+            "c1ccc(Cc2ccccc2)cc1",
+            52
+          ],
+          [
+            "c1c[nH+]c[nH]1",
+            42
+          ],
+          [
+            "c1ccc(Oc2ccccc2)cc1",
+            37
+          ]
+        ],
+        "test_compounds": 1165,
+        "distinct_test_scaffolds": 1165,
+        "test_compounds_in_singleton_scaffolds": 1165
+      }
+    },
+    "random": {
+      "n_train": 4660,
+      "n_test": 1165,
+      "train_base_rate": 0.15536480686695278,
+      "test_base_rate": 0.1871244635193133,
+      "scaffold_overlap": {
+        "n_test": 1165,
+        "test_compounds_whose_scaffold_is_in_train": 927,
+        "fraction": 0.7957081545064377,
+        "n_train_scaffolds": 1346,
+        "n_test_scaffolds": 417
+      },
+      "nulls": {
+        "majority_class_accuracy": 0.8128755364806867,
+        "random_ranker_pr_auc": 0.1871244635193133,
+        "random_ranker_roc_auc": 0.5,
+        "constant_base_rate_brier": 0.15210889867192248,
+        "random_ranker_enrichment_x": 1.0
+      },
+      "models": {
+        "calibrated_rf__ecfp4": {
+          "n": 1165,
+          "n_actives": 218,
+          "base_rate": 0.1871244635193133,
+          "accuracy": 0.8351931330472103,
+          "roc_auc": 0.7627854257287618,
+          "pr_auc": 0.5016731119136952,
+          "brier": 0.12690748674767036,
+          "ece": 0.04509776028714764,
+          "recall_at_0.5": 0.1834862385321101,
+          "precision_at_0.5": 0.7407407407407407,
+          "enrichment_top10pct": {
+            "frac": 0.1,
+            "n_top": 117,
+            "actives_top": 65,
+            "expected_actives_if_random": 21.9,
+            "enrichment_x": 2.9689092762487257,
+            "precision_at_frac": 0.5555555555555556,
+            "recall_at_frac": 0.2981651376146789
+          },
+          "margin_over_null": {
+            "accuracy_over_majority_pp": 2.2317596566523656,
+            "pr_auc_over_random_x": 2.680959520089243,
+            "brier_vs_base_rate": -0.025201411924252126,
+            "enrichment_x": 2.9689092762487257
+          }
+        },
+        "calibrated_rf__descriptors": {
+          "n": 1165,
+          "n_actives": 218,
+          "base_rate": 0.1871244635193133,
+          "accuracy": 0.8197424892703863,
+          "roc_auc": 0.7363596291524177,
+          "pr_auc": 0.4071710301135669,
+          "brier": 0.13675150019171134,
+          "ece": 0.04472974146619123,
+          "recall_at_0.5": 0.12385321100917432,
+          "precision_at_0.5": 0.5869565217391305,
+          "enrichment_top10pct": {
+            "frac": 0.1,
+            "n_top": 117,
+            "actives_top": 51,
+            "expected_actives_if_random": 21.9,
+            "enrichment_x": 2.3294518936720774,
+            "precision_at_frac": 0.4358974358974359,
+            "recall_at_frac": 0.23394495412844038
+          },
+          "margin_over_null": {
+            "accuracy_over_majority_pp": 0.6866952789699621,
+            "pr_auc_over_random_x": 2.1759369269830526,
+            "brier_vs_base_rate": -0.015357398480211143,
+            "enrichment_x": 2.3294518936720774
+          }
+        }
+      },
+      "controls": {
+        "shuffled_labels__ecfp4": {
+          "n": 1165,
+          "n_actives": 218,
+          "base_rate": 0.1871244635193133,
+          "accuracy": 0.8128755364806867,
+          "roc_auc": 0.4086104840975364,
+          "pr_auc": 0.15725149452147055,
+          "brier": 0.1533760338317086,
+          "ece": 0.03155990698533995,
+          "recall_at_0.5": 0.0,
+          "precision_at_0.5": NaN,
+          "enrichment_top10pct": {
+            "frac": 0.1,
+            "n_top": 117,
+            "actives_top": 14,
+            "expected_actives_if_random": 21.9,
+            "enrichment_x": 0.6394573825766486,
+            "precision_at_frac": 0.11965811965811966,
+            "recall_at_frac": 0.06422018348623854
+          }
+        },
+        "single_descriptor__molecular weight": {
+          "roc_auc": 0.6339333288123771,
+          "pr_auc": 0.2452569777410893
+        },
+        "single_descriptor__number of hydrogen donors": {
+          "roc_auc": 0.5122550206833749,
+          "pr_auc": 0.20226384772652278
+        },
+        "single_descriptor__number of hydrogen acceptors": {
+          "roc_auc": 0.5684367825000243,
+          "pr_auc": 0.22433196356070698
+        },
+        "single_descriptor__polar surface area": {
+          "roc_auc": 0.5595143524214564,
+          "pr_auc": 0.22516370815520054
+        },
+        "single_descriptor__lipophilicity": {
+          "roc_auc": 0.5910286467163326,
+          "pr_auc": 0.24105454231243564
+        },
+        "single_descriptor__rotatable bonds": {
+          "roc_auc": 0.4915110973329587,
+          "pr_auc": 0.18026541774061913
+        }
+      },
+      "scaffold_composition": {
+        "n_compounds": 5825,
+        "n_scaffolds": 1576,
+        "singleton_scaffolds": 1202,
+        "acyclic_empty_scaffold_compounds": 1513,
+        "largest_scaffold_classes": [
+          [
+            "<acyclic>",
+            1513
+          ],
+          [
+            "c1ccccc1",
+            1224
+          ],
+          [
+            "c1ccncc1",
+            75
+          ],
+          [
+            "c1ccc2ccccc2c1",
+            56
+          ],
+          [
+            "C1CCCCC1",
+            56
+          ],
+          [
+            "c1ccc(Cc2ccccc2)cc1",
+            52
+          ],
+          [
+            "c1c[nH+]c[nH]1",
+            42
+          ],
+          [
+            "c1ccc(Oc2ccccc2)cc1",
+            37
+          ]
+        ],
+        "test_compounds": 1165,
+        "distinct_test_scaffolds": 417,
+        "test_compounds_in_singleton_scaffolds": 222
+      }
+    }
+  },
+  "applicability_domain": {
+    "thresholds": {
+      "in_domain_min_similarity": 0.5,
+      "out_of_domain_max_similarity": 0.3333333333333333,
+      "in_percentile": 25.0,
+      "out_percentile": 5.0,
+      "training_self_similarity_median": 0.6060606060606061
+    },
+    "test_similarity_summary": {
+      "mean": 0.412477489950269,
+      "median": 0.3780487804878049,
+      "p10": 0.2465753424657534,
+      "p90": 0.6285714285714286
+    },
+    "band_counts": {
+      "in_domain": 305,
+      "borderline": 439,
+      "out_of_domain": 421
+    },
+    "by_band": {
+      "in_domain": {
+        "n": 305,
+        "n_actives": 65,
+        "base_rate": 0.21311475409836064,
+        "accuracy": 0.8327868852459016,
+        "roc_auc": 0.8000961538461538,
+        "pr_auc": 0.606370416812575,
+        "brier": 0.1267864601816929,
+        "ece": 0.03965318103503065,
+        "recall_at_0.5": 0.27692307692307694,
+        "precision_at_0.5": 0.8181818181818182,
+        "enrichment_top10pct": {
+          "frac": 0.1,
+          "n_top": 31,
+          "actives_top": 23,
+          "expected_actives_if_random": 6.6,
+          "enrichment_x": 3.481389578163772,
+          "precision_at_frac": 0.7419354838709677,
+          "recall_at_frac": 0.35384615384615387
+        },
+        "nulls": {
+          "majority_class_accuracy": 0.7868852459016393,
+          "random_ranker_pr_auc": 0.21311475409836064,
+          "random_ranker_roc_auc": 0.5,
+          "constant_base_rate_brier": 0.16769685568395593,
+          "random_ranker_enrichment_x": 1.0
+        },
+        "mean_similarity_to_train": 0.6282094113620311
+      },
+      "borderline": {
+        "n": 439,
+        "n_actives": 97,
+        "base_rate": 0.22095671981776766,
+        "accuracy": 0.7699316628701595,
+        "roc_auc": 0.6875263760776511,
+        "pr_auc": 0.3753760190662568,
+        "brier": 0.1638184482047629,
+        "ece": 0.0624643929791705,
+        "recall_at_0.5": 0.020618556701030927,
+        "precision_at_0.5": 0.25,
+        "enrichment_top10pct": {
+          "frac": 0.1,
+          "n_top": 44,
+          "actives_top": 19,
+          "expected_actives_if_random": 9.7,
+          "enrichment_x": 1.9543111527647612,
+          "precision_at_frac": 0.4318181818181818,
+          "recall_at_frac": 0.1958762886597938
+        },
+        "nulls": {
+          "majority_class_accuracy": 0.7790432801822323,
+          "random_ranker_pr_auc": 0.22095671981776766,
+          "random_ranker_roc_auc": 0.5,
+          "constant_base_rate_brier": 0.17213484778514018,
+          "random_ranker_enrichment_x": 1.0
+        },
+        "mean_similarity_to_train": 0.4003021737741974
+      },
+      "out_of_domain": {
+        "n": 421,
+        "n_actives": 107,
+        "base_rate": 0.25415676959619954,
+        "accuracy": 0.7458432304038005,
+        "roc_auc": 0.6372403119233288,
+        "pr_auc": 0.3392420359742387,
+        "brier": 0.1877990015827825,
+        "ece": 0.07375592274717375,
+        "recall_at_0.5": 0.0,
+        "precision_at_0.5": NaN,
+        "enrichment_top10pct": {
+          "frac": 0.1,
+          "n_top": 43,
+          "actives_top": 16,
+          "expected_actives_if_random": 10.9,
+          "enrichment_x": 1.464029558791567,
+          "precision_at_frac": 0.37209302325581395,
+          "recall_at_frac": 0.14953271028037382
+        },
+        "nulls": {
+          "majority_class_accuracy": 0.7458432304038005,
+          "random_ranker_pr_auc": 0.25415676959619954,
+          "random_ranker_roc_auc": 0.5,
+          "constant_base_rate_brier": 0.1895611060646239,
+          "random_ranker_enrichment_x": 1.0
+        },
+        "mean_similarity_to_train": 0.26888301909684365
+      }
+    },
+    "by_similarity_quartile": [
+      {
+        "quartile": 1,
+        "similarity_range": [
+          0.08333333333333333,
+          0.2978723404255319
+        ],
+        "n": 291,
+        "base_rate": 0.24742268041237114,
+        "pr_auc": 0.3261772296405387,
+        "roc_auc": 0.6305175038051751,
+        "brier": 0.1835886391093169,
+        "ece": 0.05835788821664583,
+        "pr_auc_over_random_x": 1.3182996364638437
+      },
+      {
+        "quartile": 2,
+        "similarity_range": [
+          0.2978723404255319,
+          0.3780487804878049
+        ],
+        "n": 291,
+        "base_rate": 0.2646048109965636,
+        "pr_auc": 0.39917225525983424,
+        "roc_auc": 0.682121616701056,
+        "brier": 0.19271131988606574,
+        "ece": 0.10535925350448433,
+        "pr_auc_over_random_x": 1.5085600815663864
+      },
+      {
+        "quartile": 3,
+        "similarity_range": [
+          0.3780487804878049,
+          0.5
+        ],
+        "n": 278,
+        "base_rate": 0.19784172661870503,
+        "pr_auc": 0.354562933926418,
+        "roc_auc": 0.682429677945373,
+        "brier": 0.14919564877908637,
+        "ece": 0.045350299208882235,
+        "pr_auc_over_random_x": 1.7921544660280766
+      },
+      {
+        "quartile": 4,
+        "similarity_range": [
+          0.5,
+          1.0
+        ],
+        "n": 305,
+        "base_rate": 0.21311475409836064,
+        "pr_auc": 0.606370416812575,
+        "roc_auc": 0.8000961538461538,
+        "brier": 0.1267864601816929,
+        "ece": 0.03965318103503065,
+        "pr_auc_over_random_x": 2.8452765711974672
+      }
+    ]
+  }
+}

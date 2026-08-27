@@ -1,0 +1,8 @@
+# Pinned so the reported numbers reproduce. Re-running with different versions
+# will move them: an early XGBoost-based iteration of this project reported
+# ROC-AUC 0.7650 that came back as 0.7697 on a newer release.
+numpy==2.4.4
+pandas==3.0.2
+scikit-learn==1.8.0
+rdkit==2026.3.5
+pytest==8.3.4
